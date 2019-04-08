@@ -1,11 +1,11 @@
 {
-  "name": "hdkey",
-  "version": "1.1.1",
+  "name": "newchain-hdkey",
+  "version": "0.1.0",
   "description": "Bitcoin BIP32 hierarchical deterministic keys",
   "main": "lib/hdkey.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/cryptocoinjs/hdkey"
+    "url": "git@github.com:xiawu/newchain-hdkey.git"
   },
   "license": "MIT",
   "keywords": [
@@ -18,9 +18,9 @@
     "crypto"
   ],
   "bugs": {
-    "url": "https://github.com/cryptocoinjs/hdkey/issues"
+    "url": "https://github.com/xiawu/newchain-hdkey/issues"
   },
-  "homepage": "https://github.com/cryptocoinjs/hdkey",
+  "homepage": "https://github.com/xiawu/newchain-hdkey",
   "devDependencies": {
     "bigi": "^1.1.0",
     "coveralls": "^2.10.0",
@@ -35,7 +35,8 @@
   "dependencies": {
     "coinstring": "^2.0.0",
     "safe-buffer": "^5.1.1",
-    "secp256k1": "^3.0.1"
+    "bn.js": "^4.11.0",
+    "elliptic": "^6.4.1"
   },
   "scripts": {
     "lint": "standard",

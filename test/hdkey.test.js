@@ -3,7 +3,7 @@ var BigInteger = require('bigi')
 var Buffer = require('safe-buffer').Buffer
 var ecurve = require('ecurve')
 var secureRandom = require('secure-random')
-var curve = ecurve.getCurveByName('secp256k1')
+var curve = ecurve.getCurveByName('secp256r1')
 var HDKey = require('../')
 var fixtures = require('./fixtures/hdkey')
 
@@ -16,6 +16,9 @@ describe('hdkey', function () {
       it('should properly derive the chain path: ' + f.path, function () {
         var hdkey = HDKey.fromMasterSeed(Buffer.from(f.seed, 'hex'))
         var childkey = hdkey.derive(f.path)
+
+        console.log('childkey.privateExtendedKey:' + childkey.privateExtendedKey + '  f.private:' + f.private)
+        console.log('childkey.publicExtendedKey:' + childkey.publicExtendedKey + '  f.public:' + f.public)
 
         assert.equal(childkey.privateExtendedKey, f.private)
         assert.equal(childkey.publicExtendedKey, f.public)
@@ -86,10 +89,11 @@ describe('hdkey', function () {
         assert.equal(hdkey.depth, 5)
         assert.equal(hdkey.parentFingerprint, 0x31a507b8)
         assert.equal(hdkey.index, 2)
+
         assert.equal(hdkey.chainCode.toString('hex'), '9452b549be8cea3ecb7a84bec10dcfd94afe4d129ebfd3b3cb58eedf394ed271')
         assert.equal(hdkey.privateKey.toString('hex'), 'bb7d39bdb83ecf58f2fd82b6d918341cbef428661ef01ab97c28a4842125ac23')
-        assert.equal(hdkey.publicKey.toString('hex'), '024d902e1a2fc7a8755ab5b694c575fce742c48d9ff192e63df5193e4c7afe1f9c')
-        assert.equal(hdkey.identifier.toString('hex'), '26132fdbe7bf89cbc64cf8dafa3f9f88b8666220')
+        assert.equal(hdkey.publicKey.toString('hex'), '03e54570a9eb5b8378850f4e9bde4b6008834263b3cf454baa818107e4f0edf675')
+        assert.equal(hdkey.identifier.toString('hex'), '8a0abfc573a9b1ec924f674c29a70e726baaf4e6')
       })
     })
 
@@ -120,8 +124,8 @@ describe('hdkey', function () {
       var mb = Buffer.alloc(32, 8)
       var a = hdkey.sign(ma)
       var b = hdkey.sign(mb)
-      assert.equal(a.toString('hex'), '6ba4e554457ce5c1f1d7dbd10459465e39219eb9084ee23270688cbe0d49b52b7905d5beb28492be439a3250e9359e0390f844321b65f1a88ce07960dd85da06')
-      assert.equal(b.toString('hex'), 'dfae85d39b73c9d143403ce472f7c4c8a5032c13d9546030044050e7d39355e47a532e5c0ae2a25392d97f5e55ab1288ef1e08d5c034bad3b0956fbbab73b381')
+      assert.equal(a.toString('hex'), 'e0d98bcddb7bf13b572e784c4bb81cd80635f3e673c734331408eae670632dc272d9cfce8cf45095b6e4cde563cd98be424b4f7cd3c7ccc0b67f29e7cde1d0bf')
+      assert.equal(b.toString('hex'), '9edf534835acdad2f0ee89985f4cdf875c4667ada0d307d1051a8a181bd2f11239e9e2a556e577fbcba95373e4ba0ca7693b7db93baa10a955e60c7060651028')
       assert.equal(hdkey.verify(ma, a), true)
       assert.equal(hdkey.verify(mb, b), true)
       assert.equal(hdkey.verify(Buffer.alloc(32), Buffer.alloc(64)), false)
@@ -139,13 +143,13 @@ describe('hdkey', function () {
 
   describe('> when deriving public key', function () {
     it('should work', function () {
-      var key = 'xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8'
+      var key = 'xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ1rxaVqyxRSgbLorQN2Q1RJiLfHtqHqAcK8WosMpL4tCGungDyV'
       var hdkey = HDKey.fromExtendedKey(key)
 
       var path = 'm/3353535/2223/0/99424/4/33'
       var derivedHDKey = hdkey.derive(path)
 
-      var expected = 'xpub6JdKdVJtdx6sC3nh87pDvnGhotXuU5Kz6Qy7Piy84vUAwWSYShsUGULE8u6gCivTHgz7cCKJHiXaaMeieB4YnoFVAsNgHHKXJ2mN6jCMbH1'
+      var expected = 'xpub6K1QVvXH1F83bAaLXq5hcPQ4dY84iUW95e6SwTwsfjYDQ1d3L4QVrje4E4r98GPvnH9mVuRB1LVfZ6Yy34eEN9wzTtqt2wWKYCNQEXEz6Lm'
       assert.equal(derivedHDKey.publicExtendedKey, expected)
     })
   })
@@ -156,7 +160,7 @@ describe('hdkey', function () {
       var masterKey = HDKey.fromMasterSeed(Buffer.from(seed, 'hex'))
 
       var newKey = masterKey.derive("m/44'/6'/4'")
-      var expected = 'xprv9ymoag6W7cR6KBcJzhCM6qqTrb3rRVVwXKzwNqp1tDWcwierEv3BA9if3ARHMhMPh9u2jNoutcgpUBLMfq3kADDo7LzfoCnhhXMRGX3PXDx'
+      var expected = 'xprv9xuuBSFUmv2iQ3BgD4hgCTcik3HrwyfPz1cNa2byQLFx76hHbaEQ2Bvm1HeBi78pXK3v3MyQDZky41uWXfyJVUP4q9MyWb1oCHsiCd6SH6i'
       assert.equal(newKey.privateExtendedKey, expected)
     })
   })
@@ -173,7 +177,7 @@ describe('hdkey', function () {
       var hdkey = HDKey.fromExtendedKey(key)
       assert.equal(hdkey.privateKey.toString('hex'), '00000055378cf5fafb56c711c674143f9b0ee82ab0ba2924f19b64f5ae7cdbfd')
       var derived = hdkey.derive("m/44'/0'/0'/0/0'")
-      assert.equal(derived.privateKey.toString('hex'), '3348069561d2a0fb925e74bf198762acc47dce7db27372257d2d959a9e6f8aeb')
+      assert.equal(derived.privateKey.toString('hex'), '3da46554845f779a6f15bf32adfc3137e00096ecb00d9721f4c2985883b7a568')
     })
   })
 
@@ -234,8 +238,8 @@ describe('hdkey', function () {
       assert.equal(hdkey.parentFingerprint, 0x31a507b8)
       assert.equal(hdkey.index, 2)
       assert.equal(hdkey.chainCode.toString('hex'), '9452b549be8cea3ecb7a84bec10dcfd94afe4d129ebfd3b3cb58eedf394ed271')
-      assert.equal(hdkey.publicKey.toString('hex'), '024d902e1a2fc7a8755ab5b694c575fce742c48d9ff192e63df5193e4c7afe1f9c')
-      assert.equal(hdkey.identifier.toString('hex'), '26132fdbe7bf89cbc64cf8dafa3f9f88b8666220')
+      assert.equal(hdkey.publicKey.toString('hex'), '03e54570a9eb5b8378850f4e9bde4b6008834263b3cf454baa818107e4f0edf675')
+      assert.equal(hdkey.identifier.toString('hex'), '8a0abfc573a9b1ec924f674c29a70e726baaf4e6')
     })
 
     it('should be able to verify signatures', function () {
